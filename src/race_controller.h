@@ -17,7 +17,7 @@ public:
     RaceController(
         InputManager& inputs, 
         uint8_t status_led_pin, 
-        uint8_t status_led_2_pin
+        MotorController& motor_controller
     );
 
     void begin();
@@ -36,5 +36,5 @@ private:
     RaceState _state;
     InputManager& _inputs;
     Led _status_led;
-    Led _status_led_2;
+    MotorController& _motor_controller;
 };

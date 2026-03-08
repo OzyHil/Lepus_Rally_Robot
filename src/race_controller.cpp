@@ -1,24 +1,22 @@
 #include "race_controller.h"
 #include "input_manager.h"
 
-RaceController::RaceController(InputManager& inputs, uint8_t status_led_pin, uint8_t status_led_2_pin)
+RaceController::RaceController(InputManager& inputs, uint8_t status_led_pin, MotorController& motor_controller)
     : _state(RaceState::IDLE),
       _inputs(inputs),
       _status_led(status_led_pin),
-      _status_led_2(status_led_2_pin)
+      _motor_controller(motor_controller)
       {}
 
 void RaceController::begin() {
     _status_led.begin();
-    _status_led_2.begin();
     _status_led.pwm(30); 
-    _status_led_2.pwm(30); 
+    _motor_controller.begin();
     setState(RaceState::IDLE);
 }
 
 void RaceController::update() {
     _status_led.update();
-    _status_led_2.update();
     
     switch (_state) {
         case RaceState::IDLE:       handleIdle();       break;
@@ -37,18 +35,16 @@ void RaceController::setState(RaceState newState) {
 
     switch (_state) {
         case RaceState::IDLE:
-            _status_led.blink(100);
-            _status_led_2.blink(100);
+            _status_led.blink(500);
+            _motor_controller.stop();
             break;
             
         case RaceState::READY:
-            _status_led.off();
-            _status_led_2.blink(100);
+            _status_led.blink(90);
         break;
         
         case RaceState::RUNNING:
-            _status_led.blink(100);
-            _status_led_2.off();
+            _motor_controller.update(35.0);
             break;
             
             case RaceState::STOPPING:
